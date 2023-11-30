@@ -1,0 +1,25 @@
+# All users has password: password
+# To generate password: docker run --rm authelia/authelia authelia hash-password 'password'
+users:
+    john:
+        password: $argon2id$v=19$m=65536,t=3,p=4$S8565M5/QQbGT5Xj90GW3g$+wb9vRNmCMO7kePVlOWHBt35wdvbhF+PNJGNOECilTg
+        displayname: John Doe 
+        email: john.doe@example.com
+        groups:
+            - admins
+            - dev
+        disabled: false
+    james:
+        password: $argon2id$v=19$m=65536,t=3,p=4$S8565M5/QQbGT5Xj90GW3g$+wb9vRNmCMO7kePVlOWHBt35wdvbhF+PNJGNOECilTg
+        displayname: Mr. Bond
+        email: james.bond@example.com
+        groups:
+          - sales
+        disabled: false
+    bob:
+        password: $argon2id$v=19$m=65536,t=3,p=4$S8565M5/QQbGT5Xj90GW3g$+wb9vRNmCMO7kePVlOWHBt35wdvbhF+PNJGNOECilTg
+        displayname: Bob Marley
+        email: bob.marley@example.com
+        groups:
+          - dev
+        disabled: false

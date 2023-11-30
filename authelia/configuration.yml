@@ -1,0 +1,82 @@
+theme: "auto" # "dark"
+jwt_secret: "insecure_secret"
+
+server:
+  port: 9091
+  asset_path: "/config/assets/"
+
+log:
+  level: "info" # "debug"
+
+authentication_backend:
+  refresh_interval: "1m"
+  password_reset:
+    disable: false
+  file:
+    path: "/config/users.yml"
+    password:
+      algorithm: "argon2id"
+      iterations: 1
+      parallelism: 8
+      memory: 64
+
+totp:
+  disable: false
+  issuer: "example.com"
+  algorithm: "SHA1"
+  digits: 6
+  period: 30
+  skew: 1
+  secret_size: 32
+
+webauthn:
+  disable: false
+  timeout: "60s"
+  display_name: "EXAMPLE"
+  attestation_conveyance_preference: "indirect"
+  user_verification: "preferred"
+
+ntp:
+  version: 4
+  max_desync: "5s"
+  disable_startup_check: false
+  disable_failure: true
+
+session:
+  secret: "insecure_session_secret"
+  name: "EXAMPLE"
+  domain: "example.com"
+  expiration: "1h"
+  inactivity: "15m"
+  remember_me_duration: "1M"
+regulation:
+  max_retries: 3
+  find_time: "2m"
+  ban_time: "5m"
+
+storage:
+  encryption_key: "you_must_generate_a_random_string_of_more_than_twenty_chars_and_configure_this"
+  local:
+    path: /config/db.sqlite
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: "public.example.com"
+      policy: bypass
+    - domain: "traefik.example.com"
+      policy: one_factor
+      subject: 
+        - "group:admins"
+    - domain: "one.example.com"
+      policy: one_factor
+      subject: 
+        - "group:dev"
+    - domain: "two.example.com"
+      policy: two_factor
+      subject: 
+        - "group:sales"
+
+notifier:
+  filesystem:
+    filename: /config/emails.txt
