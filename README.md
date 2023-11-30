@@ -23,6 +23,7 @@ There are 3 preconfigured users wich you can use.
 | john | password | admins, dev |
 | james | password | sales |
 | bob | password | dev |
+
 If you need to do a password reset or configure 2FA device for a user, it will send an email. In this POC I have decided to only post the mail to an `email.txt` which will be located in `authelia` folder.
 ## Public
 URL: https://public.example.com  
