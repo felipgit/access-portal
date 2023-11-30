@@ -3,13 +3,13 @@ Based on Traefik as proxy and Authelia as the authentication middleware.
 # Installation
 1. Download the repo
 ```bash
-git clone
+git clone git@github.com:felipgit/access-portal.git
 ```
 2. Customize to your needs by changing the domain example.com to your own and other subdomains if you want to.  
 _Recommendation: You can configure a sub domain (test.example.com, instead of example.com). For example set a DNS record to match *.test.myowndomain.com instead of example.com._  
-- Change values in docker-compse.yml
-- Change values in authelia/configuration.yml
-- Optional: Customize stuff in authelia/assets
+- Change values in `docker-compse.yml`
+- Change values in `authelia/configuration.yml`
+- Optional: Customize stuff in `authelia/assets`
 
 3. Start the stack:
 ```bash
