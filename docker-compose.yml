@@ -1,0 +1,100 @@
+version: '3.8'
+services:
+  traefik:
+    image: traefik:latest
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.websecure.rule=HostRegexp(`{host:.+}`)
+      - traefik.http.routers.websecure.entrypoints=http
+      - traefik.http.routers.websecure.middlewares=websecure
+      - traefik.http.routers.traefik.rule=Host(`traefik.example.com`)
+      - traefik.http.routers.traefik.entrypoints=https
+      - traefik.http.routers.traefik.middlewares=authelia@docker
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
+      - traefik.http.middlewares.websecure.redirectscheme.scheme=https
+    command:
+      - --entryPoints.http.address=:80
+      - --entryPoints.https.address=:443
+      - --providers.docker=true
+      - --api=true
+      - --api.dashboard=true
+      - --global.sendAnonymousUsage=false
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http
+      - --certificatesresolvers.letsencrypt.acme.email=admin@example.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+  authelia:
+    image: authelia/authelia:latest
+    restart: always
+    environment:
+      - TZ="Europe/Stockholm"
+    volumes:
+      - ./authelia:/config
+    depends_on:
+      - traefik
+      # - redis
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authelia.rule=Host(`auth.example.com`)
+      - traefik.http.routers.authelia.entryPoints=https
+      - traefik.http.routers.authelia.tls=true
+      - traefik.http.routers.authelia.tls.certresolver=letsencrypt
+      - traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/verify?rd=https%3A%2F%2Fauth.example.com
+      - traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true
+      - traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email
+  public:
+    image: traefik/whoami:latest
+    hostname: public 
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.public.rule=Host(`public.example.com`)
+      - traefik.http.routers.public.entrypoints=https
+      - traefik.http.routers.public.tls=true
+      - traefik.http.routers.public.tls.certresolver=letsencrypt
+      - traefik.http.routers.public.middlewares=authelia@docker
+    depends_on:
+      - traefik
+      - authelia
+  one:
+    image: camandel/whoami:latest
+    hostname: one 
+    restart: always
+    environment:
+      - COLOR=blue
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.one.rule=Host(`one.example.com`)
+      - traefik.http.routers.one.entrypoints=https
+      - traefik.http.routers.one.tls=true
+      - traefik.http.routers.one.tls.certresolver=letsencrypt
+      - traefik.http.routers.one.middlewares=authelia@docker
+    depends_on:
+      - traefik
+      - authelia
+  two:
+    image: camandel/whoami:latest
+    hostname: two
+    restart: always
+    environment:
+      - COLOR=red
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.two.rule=Host(`two.example.com`)
+      - traefik.http.routers.two.entrypoints=https
+      - traefik.http.routers.two.tls=true
+      - traefik.http.routers.two.tls.certresolver=letsencrypt
+      - traefik.http.routers.two.middlewares=authelia@docker
+    depends_on:
+      - traefik
+      - authelia
