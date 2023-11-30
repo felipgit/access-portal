@@ -1,5 +1,5 @@
 # Selfhosted Access Portal
-Based on Traefik as proxy and Authelia as the authentication middleware.
+Based on Traefik as proxy and Authelia as the authentication middleware. It is expected to have port 80 and 443 exposed to this.
 # Installation
 1. Download the repo
 ```bash
