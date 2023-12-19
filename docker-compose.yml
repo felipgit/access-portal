@@ -98,3 +98,25 @@ services:
     depends_on:
       - traefik
       - authelia
+  lldap:
+    image: lldap/lldap:stable
+    restart: always
+    ports:
+      - "17170:17170"
+    volumes:
+      - "./lldap:/data"
+    environment:
+      - UID=1000
+      - GID=1000
+      - TZ=Europe/Stockholm
+      - LLDAP_JWT_SECRET=long-complex-string-here
+      - LLDAP_LDAP_USER_PASS=ldap-admin-pass-here
+      - LLDAP_LDAP_BASE_DN=dc=example,dc=com
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - ./redis:/data
+    environment:
+      - TZ=Europe/Stockholm
+      - REDIS_PASSWORD=redis-password-here
